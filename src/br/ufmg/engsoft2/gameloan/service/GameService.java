@@ -9,6 +9,8 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.*;
+
 public class GameService {
     private GameDB gameDB;
 
@@ -17,17 +19,9 @@ public class GameService {
     }
 
     public void addGame(String name, String description, double price){
-        if(description == null || description == ""){
-            throw new InputMismatchException("Descricao incorreta ou faltante");
-        }
-
-        if(name == null || name == ""){
-            throw new InputMismatchException("Nome incorreto ou faltante");
-        }
-
-        if(price < 0){
-            throw new InputMismatchException("Preco incorreto, não pode ser negativo");
-        }
+        isNullOrEmpty(name, "Nome");
+		isNullOrEmpty(description, "Descrição");
+		isPositive(price, "Preço");
 
         gameDB.add
                 (new Game(name, description, price, SessionManager.getSession().getLoggedUser().getEmail()));
@@ -37,7 +31,7 @@ public class GameService {
     	List<Game> games = GameDB.getInstance().getAll();
     	games = games.stream()
 				.filter(game -> game.getName().equals(name))
-				.collect(Collectors.toList());
+				.toList();
     	
     	if(games.isEmpty()) {
     		throw new InputMismatchException("Game não encontrado.");
@@ -47,19 +41,14 @@ public class GameService {
     }
     
     public List<Game> listGamesByUser(User loggedUser) {
-    	
-    	if(loggedUser == null) {
-			throw new InputMismatchException("Usuário não encontrado.");
-		} else if(loggedUser.getEmail() == null || loggedUser.getEmail() == "") {
-			throw new InputMismatchException("Email de usuário faltante.");
-			
-		}
-    	
+    	isObjectNull(loggedUser, "Usuário logado");
+		isNullOrEmpty(loggedUser.getEmail(), "Email do usuário logado");
+
     	return this.gameDB
 				   .getAll()
 				   .stream()
 				   .filter(game -> game.getOwnerEmail().equals(loggedUser.getEmail()))
-				   .collect(Collectors.toList());
+					.toList();
     }
     
 	public void printGamesListByUser(User loggedUser) {

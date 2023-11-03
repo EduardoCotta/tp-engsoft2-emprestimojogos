@@ -11,6 +11,8 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 
+import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.isNullOrEmpty;
+
 public class UserService {
     private final UserDB userDB;
 
@@ -19,17 +21,9 @@ public class UserService {
     }
 
     public void signUp(String email, String name, String interests, String password) {
-        if (email == null || "".equals(email)) {
-            throw new InputMismatchException("E-mail incorreto ou faltante");
-        }
-
-        if (name == null || "".equals(name)) {
-            throw new InputMismatchException("Nome incorreto ou faltante");
-        }
-
-        if (password == null || "".equals(password)) {
-            throw new InputMismatchException("Senha incorreta ou faltante");
-        }
+        isNullOrEmpty(email, "E-mail");
+        isNullOrEmpty(name, "Nome");
+        isNullOrEmpty(password, "Senha");
 
         userDB.add(new User(email, name, interests, password));
     }
@@ -59,13 +53,8 @@ public class UserService {
     }
 
     public void doLogin(String email, String password) {
-        if (email == null || "".equals(email)) {
-            throw new InputMismatchException("E-mail incorreto ou faltante");
-        }
-
-        if (password == null || "".equals(password)) {
-            throw new InputMismatchException("Senha incorreta ou faltante");
-        }
+        isNullOrEmpty(email, "E-mail");
+        isNullOrEmpty(password, "Senha");
 
         Optional<User> logged = userDB.getAll().stream().filter(usuario -> usuario.getEmail().equals(email))
                 .findFirst();

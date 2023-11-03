@@ -11,6 +11,8 @@ import br.ufmg.engsoft2.gameloan.domain.Loan;
 import br.ufmg.engsoft2.gameloan.domain.User;
 import br.ufmg.engsoft2.gameloan.helper.Helper;
 
+import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.*;
+
 public class LoanService {
 
 	public static final String HIFEN_LINE = "-------------------------------------------------------%n";
@@ -25,23 +27,13 @@ public class LoanService {
 	}
 	
 	public void addLoan(String ownerEmail, String gameName, String deadlineString) {
-		if(deadlineString == null || "".equals(deadlineString)){
-			throw new InputMismatchException("A data limite não pode ser vazia");
-		}
-
-		if(ownerEmail == null || "".equals(ownerEmail)) {
-			throw new InputMismatchException("Usuário dono do jogo não encontrado.");
-		}
-
-		if(gameName == null || "".equals(gameName)) {
-			throw new InputMismatchException("Nenhum jogo foi selecionado.");
-		}
+		isNullOrEmpty(deadlineString, "Data limite");
+		isNullOrEmpty(ownerEmail, "Email do dono do jogo");
+		isNullOrEmpty(gameName, "Nome do jogo");
 
 		Date deadline = Helper.convertStringToDate(deadlineString);
 
-		if(deadline == null || !validateDeadline(deadline)) {
-			throw new InputMismatchException("A data limite deve ser posterior à data atual.");
-		}
+		validateDeadline(deadline);
 
 		User owner = userService.getByEmail(ownerEmail);
 		Game requestedGame = gameService.getGameByName(gameName);
@@ -53,16 +45,8 @@ public class LoanService {
 	}
 	
 	public List<Loan> listLoansByUser(User loggedUser) {
-		
-		if(loggedUser == null) {
-			
-			throw new InputMismatchException("Usuário não encontrado.");
-			
-		} else if(loggedUser.getEmail() == null || loggedUser.getEmail() == "") {
-			
-			throw new InputMismatchException("Email de usuário faltante.");
-			
-		}
+		isObjectNull(loggedUser, "Usuário logado");
+		isNullOrEmpty(loggedUser.getEmail(), "Email do usuário logado");
 		
 		return this.loanDB
 				   .getAll()
@@ -70,13 +54,7 @@ public class LoanService {
 				   .filter(loan -> loan.getRequester().getEmail().equals(loggedUser.getEmail()))
 				   .toList();
 	}
-	
-	private static boolean validateDeadline(Date deadline) {
-       Date today = Helper.getCurrentDateWithoutTime();
 
-	   return today.compareTo(deadline) < 0;
-	}
-	
 	public void printLoansByUser(User loggedUser) {
 		List<Loan> userLoans = this.listLoansByUser(loggedUser);
 
