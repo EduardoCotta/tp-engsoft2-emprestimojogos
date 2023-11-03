@@ -62,7 +62,9 @@ public class GameService {
 				   .collect(Collectors.toList());
     }
     
-	public void printGamesListByUser(User loggedUser, List<Game> userGames) {
+	public void printGamesListByUser(User loggedUser) {
+			List<Game> userGames = this.listGamesByUser(loggedUser);
+
 			if(userGames.isEmpty()) {
 	    		System.out.println("Você não possui nenhum jogo cadastrado!");
 	    	}

@@ -136,9 +136,7 @@ public class View {
 
         User userLogado = SessionManager.getSession().getLoggedUser();
 
-        List<Game> gamesByUser = gameService.listGamesByUser(userLogado);
-
-        gameService.printGamesListByUser(userLogado, gamesByUser);
+        gameService.printGamesListByUser(userLogado);
     }
 
     private static void showLoggedUserLoans() {
@@ -147,9 +145,7 @@ public class View {
 
         User userLogado = SessionManager.getSession().getLoggedUser();
 
-        List<Loan> emprestimosUsuario = loanService.listLoansByUser(userLogado);
-
-        loanService.printLoansByUser(userLogado, emprestimosUsuario);
+        loanService.printLoansByUser(userLogado);
     }
 
     private static void showLoggedUserAvailableGames() {

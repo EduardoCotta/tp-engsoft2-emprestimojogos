@@ -77,8 +77,9 @@ public class LoanService {
 	   return today.compareTo(deadline) < 0;
 	}
 	
-	public void printLoansByUser(User loggedUser, List<Loan> userLoans) {
-		
+	public void printLoansByUser(User loggedUser) {
+		List<Loan> userLoans = this.listLoansByUser(loggedUser);
+
 		if(userLoans.isEmpty()) {
     		System.out.println("Você não possui nenhum empréstimo cadastrado!");
     	} else {
