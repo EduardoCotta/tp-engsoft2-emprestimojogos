@@ -1,5 +1,7 @@
 package br.ufmg.engsoft2.gameloan.domain;
 
+import br.ufmg.engsoft2.gameloan.helper.Helper;
+
 import java.util.Date;
 
 public class Loan {
@@ -31,5 +33,14 @@ public class Loan {
 
 	public Date getDeadline() {
 		return deadline;
+	}
+
+	public String toString() {
+		String formattedDeadline = Helper.formatDateToString(deadline);
+		return String.format("| %-15s | %-15s | %-15s | %-15s |%n",
+				this.requester.getName(),
+				this.requestedGame.getName(),
+				this.owner.getName(),
+				formattedDeadline);
 	}
 }

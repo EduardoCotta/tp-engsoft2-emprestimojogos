@@ -67,15 +67,7 @@ public class LoanService {
     		System.out.printf("| %-15s | %-15s | %-15s |%n", "Dono", "Game solicitado", "Data limite");
     		System.out.printf(HIFEN_LINE);
     		
-    		for(Loan loan : userLoans) {
-    			
-    			String formattedDeadline = Helper.formatDateToString(loan.getDeadline());
-    			
-		    	System.out.printf("| %-15s | %-15s | %-15s |%n", loan.getOwner().getName(),
-		    													 loan.getRequestedGame().getName(),
-		    													 formattedDeadline
-	    		);
-    		}
+    		userLoans.forEach(System.out::println);
 
     		System.out.printf("-------------------------------------------------------%n");
     	}

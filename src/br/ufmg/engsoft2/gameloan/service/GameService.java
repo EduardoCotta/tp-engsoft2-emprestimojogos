@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.*;
 
 public class GameService {
-    private GameDB gameDB;
+	public static final String HIFEN_LINE = "-------------------------------------------------------%n";
+	private GameDB gameDB;
 
     public GameService() {
         gameDB = GameDB.getInstance();
@@ -59,21 +60,15 @@ public class GameService {
 	    	}
 	    	
 	    	else {
-	    		System.out.printf("-------------------------------------------------------%n");
+	    		System.out.printf(HIFEN_LINE);
 	    		System.out.printf("|              Jogos cadastrados de %-18s|%n", loggedUser.getName());
-	    		System.out.printf("-------------------------------------------------------%n");
+	    		System.out.printf(HIFEN_LINE);
 	    		System.out.printf("| %-15s | %-15s | %-15s |%n", "Nome", "Descrição", "Preço");
-	    		System.out.printf("-------------------------------------------------------%n");
+	    		System.out.printf(HIFEN_LINE);
 	    		
-	    		for(Game game : userGames) {
-	    			
-			    	System.out.printf("| %-15s | %-15s | %-15s |%n", game.getName(),
-			    													 		 game.getDescription(),
-			    													 		 game.getPrice()
-		    		);
-	    		}
+	    		userGames.forEach(System.out::println);
 	
-	    		System.out.printf("-------------------------------------------------------%n");
+	    		System.out.printf(HIFEN_LINE);
 	    	}
 		}
 }

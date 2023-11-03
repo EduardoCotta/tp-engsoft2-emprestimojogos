@@ -28,4 +28,9 @@ public class Game {
     public double getPrice() {
         return price;
     }
+
+    @Override
+    public String toString() {
+        return String.format("| %-15s | %-15s | %-15s |%n", name, description, price);
+    }
 }

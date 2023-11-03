@@ -30,14 +30,7 @@ public class GameDB {
     }
 
     public void printAll() {
-        for (Game game : gameDB) {
-            System.out.println("Nome: " + game.getName());
-            System.out.println("Descrição: " + game.getDescription());
-            System.out.println("Preço: R$" + game.getPrice());
-            System.out.println("Email do Dono: " + game.getOwnerEmail());
-            System.out.println("--------------------");
-            Helper.timer();
-        }
+        gameDB.forEach(System.out::println);
     }
 
     public List<Game> getAll() {
@@ -58,14 +51,7 @@ public class GameDB {
             System.out.println("Nenhum jogo encontrado com a palavra-chave: " + searchKey);
         } else {
             System.out.println("Jogos encontrados com a palavra-chave: " + searchKey);
-            for (Game game : foundGames) {
-                System.out.println("Nome: " + game.getName());
-                System.out.println("Descrição: " + game.getDescription());
-                System.out.println("Preço: R$" + game.getPrice());
-                System.out.println("Email do Dono: " + game.getOwnerEmail());
-                System.out.println("--------------------");
-                Helper.timer();
-            }
+            foundGames.forEach(System.out::println);
         }
     }
 }
