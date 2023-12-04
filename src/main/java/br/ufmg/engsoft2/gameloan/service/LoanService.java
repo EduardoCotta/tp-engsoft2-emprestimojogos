@@ -1,11 +1,10 @@
 package br.ufmg.engsoft2.gameloan.service;
 
 import java.util.Date;
-import java.util.InputMismatchException;
 import java.util.List;
 
 import br.ufmg.engsoft2.gameloan.domain.Game;
-import br.ufmg.engsoft2.gameloan.repository.LoanDB;
+import br.ufmg.engsoft2.gameloan.repository.LoanRepository;
 import br.ufmg.engsoft2.gameloan.session.SessionManager;
 import br.ufmg.engsoft2.gameloan.domain.Loan;
 import br.ufmg.engsoft2.gameloan.domain.User;
@@ -16,14 +15,20 @@ import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.*;
 public class LoanService {
 
 	public static final String HIFEN_LINE = "-------------------------------------------------------%n";
-	private LoanDB loanDB;
-	private UserService userService;
-	private GameService gameService;
+	private final LoanRepository loanRepository;
+	private final UserService userService;
+	private final GameService gameService;
 	
 	public LoanService() {
-		loanDB = LoanDB.getInstance();
 		userService = new UserService();
 		gameService = new GameService();
+		loanRepository = new LoanRepository();
+	}
+
+	public LoanService(LoanRepository loanRepository, UserService userService, GameService gameService) {
+		this.userService = userService;
+		this.gameService = gameService;
+		this.loanRepository = loanRepository;
 	}
 	
 	public void addLoan(String ownerEmail, String gameName, String deadlineString) {
@@ -40,15 +45,14 @@ public class LoanService {
 
 		userService.checkIfUserHasGame(gameName, ownerEmail);
 		
-		loanDB.add
-				(new Loan(owner, SessionManager.getSession().getLoggedUser(), requestedGame, deadline));
+		loanRepository.add(new Loan(owner, SessionManager.getSession().getLoggedUser(), requestedGame, deadline));
 	}
 	
 	public List<Loan> listLoansByUser(User loggedUser) {
 		isObjectNull(loggedUser, "Usuário logado");
 		isNullOrEmpty(loggedUser.getEmail(), "Email do usuário logado");
 		
-		return this.loanDB
+		return this.loanRepository
 				   .getAll()
 				   .stream()
 				   .filter(loan -> loan.getRequester().getEmail().equals(loggedUser.getEmail()))
@@ -69,7 +73,7 @@ public class LoanService {
     		
     		userLoans.forEach(System.out::println);
 
-    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf(HIFEN_LINE);
     	}
 	}
 }

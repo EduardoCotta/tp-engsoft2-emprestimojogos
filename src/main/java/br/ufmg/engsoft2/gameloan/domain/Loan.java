@@ -6,10 +6,10 @@ import java.util.Date;
 
 public class Loan {
 	
-	private User owner;
-	private User requester;
-	private Game requestedGame;
-	private Date deadline;
+	private final User owner;
+	private final User requester;
+	private final Game requestedGame;
+	private final Date deadline;
 	
 	public Loan(User owner, User requester, Game requestedGame, Date deadline) {
 		

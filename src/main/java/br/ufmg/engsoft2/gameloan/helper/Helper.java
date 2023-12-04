@@ -8,8 +8,14 @@ import java.util.Scanner;
 
 public class Helper {
 
+	private Helper() {
+		throw new IllegalStateException("Utility class");
+	}
+
+	public static final String DD_MM_YYYY = "dd/MM/yyyy";
+
 	public static String formatDateToString(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat(DD_MM_YYYY);
 		return sdf.format(date);
 	}
 
@@ -17,7 +23,7 @@ public class Helper {
 
 		try {
 
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat(DD_MM_YYYY);
 			return sdf.parse(sdf.format(new Date()));
 
 		} catch (ParseException e) {
@@ -30,10 +36,8 @@ public class Helper {
 	public static Date parseStringToDate(String dateString) {
 
 		try {
-
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			Date date = sdf.parse(dateString);
-			return date;
+			SimpleDateFormat sdf = new SimpleDateFormat(DD_MM_YYYY);
+			return sdf.parse(dateString);
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -46,7 +50,7 @@ public class Helper {
 
 		try {
 
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat(DD_MM_YYYY);
 			Date deadline = formatter.parse(dateString);
 
 			if (deadline == null) {
@@ -60,14 +64,6 @@ public class Helper {
 		}
 
 		return null;
-	}
-
-	public static void timer() {
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static String searchGameTerminal() {

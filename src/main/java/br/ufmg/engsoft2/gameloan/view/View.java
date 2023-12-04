@@ -1,20 +1,22 @@
 package br.ufmg.engsoft2.gameloan.view;
 
-import java.util.List;
-
 import br.ufmg.engsoft2.gameloan.constants.ConsoleColors;
 import br.ufmg.engsoft2.gameloan.constants.MenuOptions;
 import br.ufmg.engsoft2.gameloan.controller.Controller;
 import br.ufmg.engsoft2.gameloan.domain.Game;
 import br.ufmg.engsoft2.gameloan.session.SessionManager;
 import br.ufmg.engsoft2.gameloan.helper.Helper;
-import br.ufmg.engsoft2.gameloan.repository.GameDB;
 import br.ufmg.engsoft2.gameloan.service.LoanService;
 import br.ufmg.engsoft2.gameloan.service.GameService;
-import br.ufmg.engsoft2.gameloan.domain.Loan;
 import br.ufmg.engsoft2.gameloan.domain.User;
 
+import java.util.List;
+
 public class View {
+
+    private View() {
+        throw new IllegalStateException("Utility class");
+    }
 
     private static void printMenu(String[] options) {
         for (String option : options) {
@@ -54,13 +56,12 @@ public class View {
         showScreenSeparator();
         String userName = SessionManager.getSession().getLoggedUser().getName();
 
-        System.out.println(
-                String.format(
-                        ConsoleColors.PURPLE +
-                                "-----------------  BEM-VINDO(A) %s AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------"
-                                +
-                                ConsoleColors.RESET,
-                        userName));
+        System.out.printf(
+                ConsoleColors.PURPLE +
+                        "-----------------  BEM-VINDO(A) %s AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------"
+                        +
+                        ConsoleColors.RESET + "%n",
+                userName);
 
         printMenu(MenuOptions.LOGGED_HOME);
         Controller.handleLoggedHomeMenu();
@@ -149,13 +150,17 @@ public class View {
     }
 
     private static void showLoggedUserAvailableGames() {
-        GameDB gameDB = GameDB.getInstance();
-        gameDB.printAll();
+        GameService gameService = new GameService();
+        List<Game> availableGames = gameService.getAll();
+        gameService.printAll(availableGames);
 
     }
 
     private static void searchLoggedUserAvailableGames() {
-        GameDB gameDB = GameDB.getInstance();
-        gameDB.searchByKey(Helper.searchGameTerminal());
+        String searchKey = Helper.searchGameTerminal();
+        GameService gameService = new GameService();
+        List<Game> availableGames = gameService.searchByKeyword(searchKey);
+
+       gameService.printAll(availableGames);
     }
 }

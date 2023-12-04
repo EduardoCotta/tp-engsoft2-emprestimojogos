@@ -3,6 +3,10 @@ package br.ufmg.engsoft2.gameloan.helper;
 import java.util.Date;
 
 public class ValidatorHelper {
+    private ValidatorHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void isNullOrEmpty(String parameter, String name) {
         if (parameter == null || parameter.equals("")) {
             throw new IllegalArgumentException(name.concat(" não pode ser nulo ou vazio."));

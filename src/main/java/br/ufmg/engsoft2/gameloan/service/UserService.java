@@ -3,21 +3,24 @@ package br.ufmg.engsoft2.gameloan.service;
 import br.ufmg.engsoft2.gameloan.domain.Game;
 import br.ufmg.engsoft2.gameloan.domain.User;
 import br.ufmg.engsoft2.gameloan.exceptions.NoUserFoundException;
-import br.ufmg.engsoft2.gameloan.repository.GameDB;
-import br.ufmg.engsoft2.gameloan.repository.UserDB;
+import br.ufmg.engsoft2.gameloan.repository.UserRepository;
 import br.ufmg.engsoft2.gameloan.session.SessionManager;
 
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Optional;
 
 import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.isNullOrEmpty;
 
 public class UserService {
-    private final UserDB userDB;
+    private final UserRepository userRepository;
+    private final GameService gameService = new GameService();
 
     public UserService() {
-        userDB = UserDB.getInstance();
+        userRepository = new UserRepository();
+    }
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public void signUp(String email, String name, String interests, String password) {
@@ -25,11 +28,11 @@ public class UserService {
         isNullOrEmpty(name, "Nome");
         isNullOrEmpty(password, "Senha");
 
-        userDB.add(new User(email, name, interests, password));
+        userRepository.add(new User(email, name, interests, password));
     }
 
     public User getByEmail(String email) {
-        List<User> users = UserDB.getInstance().getAll();
+        List<User> users = userRepository.getAll();
         users = users.stream()
                 .filter(usuario -> usuario.getEmail().equals(email))
                 .toList();
@@ -42,9 +45,9 @@ public class UserService {
     }
 
     public void checkIfUserHasGame(String name, String email) {
-        List<Game> userGames = GameDB.getInstance().getAll();
+        List<Game> userGames = gameService.getAll();
         userGames = userGames.stream()
-                .filter(jogo -> jogo.getName().equals(name) && jogo.getOwnerEmail().equals(email))
+                .filter(game -> game.getName().equals(name) && game.getOwnerEmail().equals(email))
                 .toList();
 
         if (userGames.isEmpty()) {
@@ -56,11 +59,10 @@ public class UserService {
         isNullOrEmpty(email, "E-mail");
         isNullOrEmpty(password, "Senha");
 
-        Optional<User> logged = userDB.getAll().stream().filter(usuario -> usuario.getEmail().equals(email))
-                .findFirst();
+        User logged = userRepository.getByEmail(email);
 
-        if (logged.isPresent() && logged.get().getPassword().equals(password)) {
-            SessionManager.getSession().setLoggedUser(logged.get());
+        if (logged != null && logged.getPassword().equals(password)) {
+            SessionManager.getSession().setLoggedUser(logged);
         } else {
             throw new NoUserFoundException("O e-mail e senha fornecidos não existem para nenhum usuário");
         }

@@ -2,34 +2,41 @@ package br.ufmg.engsoft2.gameloan.service;
 
 import br.ufmg.engsoft2.gameloan.domain.Game;
 import br.ufmg.engsoft2.gameloan.domain.User;
-import br.ufmg.engsoft2.gameloan.repository.GameDB;
+import br.ufmg.engsoft2.gameloan.repository.GameRepository;
 import br.ufmg.engsoft2.gameloan.session.SessionManager;
 
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static br.ufmg.engsoft2.gameloan.helper.ValidatorHelper.*;
 
 public class GameService {
 	public static final String HIFEN_LINE = "-------------------------------------------------------%n";
-	private GameDB gameDB;
+	private final GameRepository gameRepository;
 
-    public GameService() {
-        gameDB = GameDB.getInstance();
-    }
+	public GameService() {
+		gameRepository = new GameRepository();
+	}
+
+    public GameService(GameRepository gameRepository) {
+		this.gameRepository = gameRepository;
+	}
 
     public void addGame(String name, String description, double price){
         isNullOrEmpty(name, "Nome");
 		isNullOrEmpty(description, "Descrição");
 		isPositive(price, "Preço");
 
-        gameDB.add
+        gameRepository.add
                 (new Game(name, description, price, SessionManager.getSession().getLoggedUser().getEmail()));
     }
+
+	public List<Game> getAll() {
+		return gameRepository.getAll();
+	}
     
     public Game getGameByName(String name) {
-    	List<Game> games = GameDB.getInstance().getAll();
+    	List<Game> games = gameRepository.getAll();
     	games = games.stream()
 				.filter(game -> game.getName().equals(name))
 				.toList();
@@ -45,7 +52,7 @@ public class GameService {
     	isObjectNull(loggedUser, "Usuário logado");
 		isNullOrEmpty(loggedUser.getEmail(), "Email do usuário logado");
 
-    	return this.gameDB
+    	return this.gameRepository
 				   .getAll()
 				   .stream()
 				   .filter(game -> game.getOwnerEmail().equals(loggedUser.getEmail()))
@@ -70,5 +77,19 @@ public class GameService {
 	
 	    		System.out.printf(HIFEN_LINE);
 	    	}
-		}
+	}
+
+	public void printAll(List<Game> games){
+		System.out.printf(HIFEN_LINE);
+		System.out.println("|              Jogos disponiveis              |");
+		System.out.printf(HIFEN_LINE);
+
+		games.forEach(System.out::println);
+
+		System.out.printf(HIFEN_LINE);
+	}
+
+	public List<Game> searchByKeyword(String keyword){
+		return gameRepository.getAllBySearchKey(keyword);
+	}
 }
