@@ -2,23 +2,28 @@ package br.ufmg.engsoft2.gameloan.service;
 
 import br.ufmg.engsoft2.gameloan.domain.User;
 import br.ufmg.engsoft2.gameloan.exceptions.NoUserFoundException;
-import br.ufmg.engsoft2.gameloan.repository.UserDB;
+import br.ufmg.engsoft2.gameloan.repository.UserRepository;
 import br.ufmg.engsoft2.gameloan.session.SessionManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Optional;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     private UserService userService;
-    private UserDB userDB;
+    @Mock
+    private UserRepository userRepository;
     @BeforeEach
     void setUp() {
-        userService = new UserService();
-        userDB = UserDB.getInstance();
+        userService = new UserService(userRepository);
     }
 
     @Test
@@ -28,11 +33,13 @@ class UserServiceTest {
         String interests = "TesteInteresses";
         String password = "123";
 
+        Mockito.when(userRepository.add(Mockito.any(User.class))).thenReturn(false);
+        Mockito.when(userRepository.getAll()).thenReturn(List.of(new User(email, name, interests, password)));
+
         userService.signUp(email, name, interests, password);
 
         Optional<User> createdUser =
-                userDB.getAll().stream()
-                        .filter(user -> user.getEmail().equals(email)).findFirst();
+                userRepository.getAll().stream().findFirst();
 
         Assertions.assertTrue(createdUser.isPresent());
         Assertions.assertEquals(name, createdUser.get().getName());
@@ -43,26 +50,26 @@ class UserServiceTest {
 
     @Test
     void shouldReturnErrorUserRegisterEmptyEmail(){
-        InputMismatchException thrown = Assertions.assertThrows(
-                InputMismatchException.class, () -> userService.signUp("", "teste", "teste", "teste"));
+        IllegalArgumentException thrown = Assertions.assertThrows(
+                IllegalArgumentException.class, () -> userService.signUp("", "teste", "teste", "teste"));
 
-        Assertions.assertEquals("E-mail incorreto ou faltante", thrown.getMessage());
+        Assertions.assertEquals("E-mail não pode ser nulo ou vazio.", thrown.getMessage());
     }
 
     @Test
     void shouldReturnErrorUserRegisterEmptyName(){
-        InputMismatchException thrown = Assertions.assertThrows(
-                InputMismatchException.class, () -> userService.signUp("teste", "", "teste", "teste"));
+        IllegalArgumentException thrown = Assertions.assertThrows(
+                IllegalArgumentException.class, () -> userService.signUp("teste", "", "teste", "teste"));
 
-        Assertions.assertEquals("Nome incorreto ou faltante", thrown.getMessage());
+        Assertions.assertEquals("Nome não pode ser nulo ou vazio.", thrown.getMessage());
     }
 
     @Test
     void shouldReturnErrorUserRegisterEmptyPassword(){
-        InputMismatchException thrown = Assertions.assertThrows(
-                InputMismatchException.class, () -> userService.signUp("teste", "teste", "teste", ""));
+        IllegalArgumentException thrown = Assertions.assertThrows(
+                IllegalArgumentException.class, () -> userService.signUp("teste", "teste", "teste", ""));
 
-        Assertions.assertEquals("Senha incorreta ou faltante", thrown.getMessage());
+        Assertions.assertEquals("Senha não pode ser nulo ou vazio.", thrown.getMessage());
     }
 
     @Test
@@ -70,15 +77,15 @@ class UserServiceTest {
         String email = "teste@email.com";
         String password = "123";
 
-        User userExpected = userDB.getAll().stream().filter(user -> user.getEmail().equals(email)).findFirst().get();
+        Mockito.when(userRepository.getByEmail(email)).thenReturn(new User(email, "Teste", "", password));
 
         userService.doLogin(email, password);
 
         User loggedUser = SessionManager.getSession().getLoggedUser();
 
-        Assertions.assertEquals(userExpected.getName(), loggedUser.getName());
+        Assertions.assertEquals("Teste", loggedUser.getName());
         Assertions.assertEquals(email, loggedUser.getEmail());
-        Assertions.assertEquals(userExpected.getInterests(), loggedUser.getInterests());
+        Assertions.assertEquals("", loggedUser.getInterests());
         Assertions.assertEquals(password, loggedUser.getPassword());
     }
 
@@ -87,6 +94,8 @@ class UserServiceTest {
         SessionManager.clean();
         String email = "teste@email.com";
         String password = "errada";
+
+        Mockito.when(userRepository.getByEmail(email)).thenReturn(new User(email, "Teste", "", "123"));
 
         NoUserFoundException thrown = Assertions.assertThrows(
                 NoUserFoundException.class, () -> userService.doLogin(email, password));
