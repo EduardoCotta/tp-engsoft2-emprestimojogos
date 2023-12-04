@@ -9,9 +9,9 @@ import java.util.Scanner;
 
 public class FormController {
 
-    private UserService userService;
-    private GameService gameService;
-    private LoanService loanService;
+    private final UserService userService;
+    private final GameService gameService;
+    private final LoanService loanService;
     
     public FormController() {
         userService = new UserService();

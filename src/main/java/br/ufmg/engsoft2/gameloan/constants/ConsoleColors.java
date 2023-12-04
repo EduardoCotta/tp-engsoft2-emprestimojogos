@@ -1,6 +1,10 @@
 package br.ufmg.engsoft2.gameloan.constants;
 
 public class ConsoleColors {
+
+    private ConsoleColors() {
+        throw new IllegalStateException("Utility class");
+    }
     public static final String RESET = "\033[0m";  // Text Reset
 
     // Regular Colors
