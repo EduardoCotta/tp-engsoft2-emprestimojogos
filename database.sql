@@ -1,11 +1,9 @@
 -- Create the gameloan database
 CREATE DATABASE gameloan;
 
--- Connect to the gameloan database
-\c gameloan;
 
 -- Create the user table
-CREATE TABLE user (
+CREATE TABLE account (
                       email VARCHAR(255) PRIMARY KEY,
                       name VARCHAR(255) NOT NULL,
                       interests VARCHAR(255),
@@ -18,19 +16,19 @@ CREATE TABLE game (
                       name VARCHAR(255) NOT NULL,
                       description VARCHAR(255),
                       price DOUBLE PRECISION NOT NULL,
-                      ownerEmail VARCHAR(255) REFERENCES user(email) ON DELETE CASCADE
+                      ownerEmail VARCHAR(255) REFERENCES account(email) ON DELETE CASCADE
 );
 
 -- Create the loan table
 CREATE TABLE loan (
                       deadline DATE NOT NULL,
-                      ownerEmail VARCHAR(255) REFERENCES user(email) ON DELETE CASCADE,
-                      requestUserEmail VARCHAR(255) REFERENCES user(email) ON DELETE CASCADE,
+                      ownerEmail VARCHAR(255) REFERENCES account(email) ON DELETE CASCADE,
+                      requestUserEmail VARCHAR(255) REFERENCES account(email) ON DELETE CASCADE,
                       gameId UUID REFERENCES game(id) ON DELETE CASCADE
 );
 
 -- Insert sample data
-INSERT INTO user (email, name, interests, password) VALUES
+INSERT INTO account (email, name, interests, password) VALUES
                                                         ('user1@example.com', 'User 1', 'Gaming', 'password123'),
                                                         ('user2@example.com', 'User 2', 'Movies', 'securepass');
 
